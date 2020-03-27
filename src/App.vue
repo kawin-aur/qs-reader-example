@@ -36,6 +36,17 @@
 
       <button class="mrz-button" @click="handleClick">Scan Text (MRZ)</button>
     </div>
+
+    <br />
+
+    <div>
+      <button class="mrz-button" @click="handleScanFrontCard">
+        Scan Front Card (FrontImage)
+      </button>
+      <button class="mrz-button" @click="handleScanBackCard">
+        Scan Back Card (MRZ + BackImage)
+      </button>
+    </div>
   </div>
 </template>
 
@@ -59,7 +70,8 @@ export default {
           this.mrzData = data.data;
         })
         .catch(err => {
-          const errorTitle = err && err.response ? err.response.statusText : null;
+          const errorTitle =
+            err && err.response ? err.response.statusText : null;
           const errorText = err && err.response ? err.response.data : null;
 
           this.$swal({
@@ -77,7 +89,8 @@ export default {
           this.isFrontImageHidden = false;
         })
         .catch(err => {
-          const errorTitle = err && err.response ? err.response.statusText : null;
+          const errorTitle =
+            err && err.response ? err.response.statusText : null;
           const errorText = err && err.response ? err.response.data : null;
 
           this.$swal({
@@ -95,7 +108,47 @@ export default {
           this.isBackImageHidden = false;
         })
         .catch(err => {
-          const errorTitle = err && err.response ? err.response.statusText : null;
+          const errorTitle =
+            err && err.response ? err.response.statusText : null;
+          const errorText = err && err.response ? err.response.data : null;
+
+          this.$swal({
+            icon: "error",
+            title: errorTitle || "Oops...",
+            text: errorText || "Something went wrong!"
+          });
+        });
+    },
+    handleScanFrontCard() {
+      return axios
+        .post("http://localhost/QSReader/api/card/front")
+        .then(({ data }) => {
+          this.$refs.frontImage.src = `data:image/png;base64,${data.data}`;
+          this.isFrontImageHidden = false;
+        })
+        .catch(err => {
+          const errorTitle =
+            err && err.response ? err.response.statusText : null;
+          const errorText = err && err.response ? err.response.data : null;
+
+          this.$swal({
+            icon: "error",
+            title: errorTitle || "Oops...",
+            text: errorText || "Something went wrong!"
+          });
+        });
+    },
+    handleScanBackCard() {
+      return axios
+        .post("http://localhost/QSReader/api/card/back")
+        .then(({ data }) => {
+          this.$refs.backImage.src = `data:image/png;base64,${data.data}`;
+          this.isBackImageHidden = false;
+          this.mrzData = data.text;
+        })
+        .catch(err => {
+          const errorTitle =
+            err && err.response ? err.response.statusText : null;
           const errorText = err && err.response ? err.response.data : null;
 
           this.$swal({
